@@ -620,6 +620,7 @@ namespace olc
 		Pixel Sample(float x, float y) const;
 		Pixel SampleBL(float u, float v) const;
 		Pixel* GetData();
+		Pixel const * GetData() const;
 		olc::Sprite* Duplicate();
 		olc::Sprite* Duplicate(const olc::vi2d& vPos, const olc::vi2d& vSize);
 		Pixel* pColData = nullptr;
@@ -1300,6 +1301,8 @@ namespace olc
 	Pixel* Sprite::GetData()
 	{ return pColData; }
 
+	Pixel const * Sprite::GetData() const
+	{ return pColData; }
 
 	olc::rcode Sprite::LoadFromFile(const std::string& sImageFile, olc::ResourcePack* pack)
 	{
