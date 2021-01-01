@@ -159,6 +159,7 @@ namespace olc
 
 	public:
 		static int LoadAudioSample(std::string sWavFile, olc::ResourcePack *pack = nullptr);
+		static int LoadAudioSample(const SOUND::AudioSample& sample);
 		static void PlaySample(int id, bool bLoop = false);
 		static void StopSample(int id);
 		static void StopAll();
@@ -328,19 +329,25 @@ namespace olc
 		funcUserFilter = func;
 	}
 
+	int SOUND::LoadAudioSample(const SOUND::AudioSample& sample)
+	{
+		if (sample.bSampleValid)
+		{
+			vecAudioSamples.push_back(sample);
+			return (unsigned int)vecAudioSamples.size();
+		}
+		else
+		{
+			return -1;
+		}
+	}
+
 	// Load a 16-bit WAVE file @ 44100Hz ONLY into memory. A sample ID
 	// number is returned if successful, otherwise -1
 	int SOUND::LoadAudioSample(std::string sWavFile, olc::ResourcePack *pack)
 	{
-
 		olc::SOUND::AudioSample a(sWavFile, pack);
-		if (a.bSampleValid)
-		{
-			vecAudioSamples.push_back(a);
-			return (unsigned int)vecAudioSamples.size();
-		}
-		else
-			return -1;
+		return LoadAudioSample(a);
 	}
 
 	// Add sample 'id' to the mixers sounds to play list
