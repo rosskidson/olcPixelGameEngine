@@ -71,6 +71,8 @@
 #ifndef OLC_PGEX_SOUND_H
 #define OLC_PGEX_SOUND_H
 
+#include "olcPixelGameEngine.h"
+
 #include <istream>
 #include <cstring>
 #include <climits>
@@ -120,34 +122,35 @@ typedef struct {
 
 namespace olc
 {
+	class AudioSample
+	{
+	public:
+		AudioSample();
+		AudioSample(std::string sWavFile, olc::ResourcePack *pack = nullptr);
+		olc::rcode LoadFromFile(std::string sWavFile, olc::ResourcePack *pack = nullptr);
+
+	public:
+		OLC_WAVEFORMATEX wavHeader;
+		float *fSample = nullptr;
+		long nSamples = 0;
+		int nChannels = 0;
+		bool bSampleValid = false;
+	};
+
+
 	// Container class for Advanced 2D Drawing functions
 	class SOUND : public olc::PGEX
 	{
 		// A representation of an affine transform, used to rotate, scale, offset & shear space
 	public:
-		class AudioSample
-		{
-		public:
-			AudioSample();
-			AudioSample(std::string sWavFile, olc::ResourcePack *pack = nullptr);
-			olc::rcode LoadFromFile(std::string sWavFile, olc::ResourcePack *pack = nullptr);
-
-		public:
-			OLC_WAVEFORMATEX wavHeader;
-			float *fSample = nullptr;
-			long nSamples = 0;
-			int nChannels = 0;
-			bool bSampleValid = false;
-		};
-
-		struct sCurrentlyPlayingSample
-		{
-			int nAudioSampleID = 0;
-			long nSamplePosition = 0;
-			bool bFinished = false;
-			bool bLoop = false;
-			bool bFlagForStop = false;
-		};
+  	struct sCurrentlyPlayingSample
+  	{
+  		int nAudioSampleID = 0;
+  		long nSamplePosition = 0;
+  		bool bFinished = false;
+  		bool bLoop = false;
+  		bool bFlagForStop = false;
+  	};
 
 		static std::list<sCurrentlyPlayingSample> listActiveSamples;
 
@@ -159,7 +162,7 @@ namespace olc
 
 	public:
 		static int LoadAudioSample(std::string sWavFile, olc::ResourcePack *pack = nullptr);
-		static int LoadAudioSample(const SOUND::AudioSample& sample);
+		static int LoadAudioSample(const AudioSample& sample);
 		static void PlaySample(int id, bool bLoop = false);
 		static void StopSample(int id);
 		static void StopAll();
@@ -220,15 +223,15 @@ namespace olc
 
 namespace olc
 {
-	SOUND::AudioSample::AudioSample()
+	AudioSample::AudioSample()
 	{	}
 
-	SOUND::AudioSample::AudioSample(std::string sWavFile, olc::ResourcePack *pack)
+	AudioSample::AudioSample(std::string sWavFile, olc::ResourcePack *pack)
 	{
 		LoadFromFile(sWavFile, pack);
 	}
 
-	olc::rcode SOUND::AudioSample::LoadFromFile(std::string sWavFile, olc::ResourcePack *pack)
+	olc::rcode AudioSample::LoadFromFile(std::string sWavFile, olc::ResourcePack *pack)
 	{
 		auto ReadWave = [&](std::istream &is)
 		{
@@ -313,7 +316,7 @@ namespace olc
 	}
 
 	// This vector holds all loaded sound samples in memory
-	std::vector<olc::SOUND::AudioSample> vecAudioSamples;
+	std::vector<olc::AudioSample> vecAudioSamples;
 
 	// This structure represents a sound that is currently playing. It only
 	// holds the sound ID and where this instance of it is up to for its
@@ -329,7 +332,7 @@ namespace olc
 		funcUserFilter = func;
 	}
 
-	int SOUND::LoadAudioSample(const SOUND::AudioSample& sample)
+	int SOUND::LoadAudioSample(const AudioSample& sample)
 	{
 		if (sample.bSampleValid)
 		{
@@ -346,7 +349,7 @@ namespace olc
 	// number is returned if successful, otherwise -1
 	int SOUND::LoadAudioSample(std::string sWavFile, olc::ResourcePack *pack)
 	{
-		olc::SOUND::AudioSample a(sWavFile, pack);
+		olc::AudioSample a(sWavFile, pack);
 		return LoadAudioSample(a);
 	}
 
