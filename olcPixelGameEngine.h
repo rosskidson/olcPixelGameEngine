@@ -3994,6 +3994,9 @@ namespace olc
 
 		virtual olc::rcode HandleSystemEvent() override
 		{
+			// Ensure the screensaver doesn't come on.
+			XResetScreenSaver(olc_Display);
+
 			using namespace X11;
 			// Handle Xlib Message Loop - we do this in the
 			// same thread that OpenGL was created so we dont
